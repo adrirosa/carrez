@@ -1,0 +1,8 @@
+{
+	"reference" : "string",
+	"location" : "string",
+	"type" : "house",
+	"size" : "150" ,
+	"price" : "int",
+	"nbRoom" : "int",
+}

@@ -1,0 +1,9 @@
+{
+	"location" : "string",
+	"type" : "house",
+	"price" : {
+		"low" : "int",
+		"average" : "int",
+		"high" : "int"
+	}
+}

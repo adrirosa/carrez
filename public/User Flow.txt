@@ -1,0 +1,14 @@
+User Flow
+
+Needs of the visitor ? 
+-> Find the good deal for buy a house/apartment
+
+Qualities of the service ?
+-> Simple to use and to understand if it is a good deal or not
+
+Steps :
+1 - Direct to the app
+2 - Home page
+3 - Enter a url
+4 - Click to "enter" (launch the research)
+5 - Results and message "Good deal or not"
