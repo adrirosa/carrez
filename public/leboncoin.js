@@ -7,9 +7,11 @@ cheerio = require('cheerio'),
 express = require('express');
 var app = express();
 
-module.exports.scrapper = function (url){
-//parse the data
-request(url, function(error, response, body) {
+
+exports.scrapper = function scrapper(url){
+  var goodString = "";
+
+  request(url, function(error, response, body) {
     if(error){ console.log("Error : " + error);}
 
     var $ = cheerio.load(body);
@@ -27,14 +29,12 @@ request(url, function(error, response, body) {
     var surfaceText = parseInt(surface.text().trim());
 
     var good = {
-       price : priceText.replace(new RegExp("[^(0-9)]", "g"), ''),
-       city : cityText,
-       type : typeText,
-       surface : surfaceText
+     price : priceText.replace(new RegExp("[^(0-9)]", "g"), ''),
+     city : cityText,
+     type : typeText,
+     surface : surfaceText
    };
-
-   var goodString = JSON.stringify(good);
-   //console.log(goodString);            
-   return goodString;
-});
-}
+   goodString = JSON.stringify(good);            
+ });
+  return goodString;
+};

@@ -12,6 +12,10 @@ var port = 3000;
 ** Function to scrap the average prices of a specific url of meilleursagent.com
 */
 function scrapMA(url){
+	var prices = {
+		'AvgPriceApt' : '',
+		'AvgPriceHouse' :''
+	};
 	request(url, function(error, response, body) {
 		if(error){ 
 			console.log("Error : " + error);}
@@ -24,16 +28,15 @@ function scrapMA(url){
 			var houseAvgText = houseAvg.text().trim();
 
 			//JSON of string
-			var prices = {
+			prices = {
 				'AvgPriceApt' : aptAvgText.replace(new RegExp("[^(0-9)]", "g"), ''),
-				'AvgPriceHouse' : houseAvgText.replace(new RegExp("[^(0-9)]", "g"), ''),
+				'AvgPriceHouse' : houseAvgText.replace(new RegExp("[^(0-9)]", "g"), '')
 			};
 
 			console.log(prices);
-			return prices;
-		})
-}
+		});
+	return prices;
+};
 
 
 exports.scrapMA = scrapMA;
-//exports.defineURL = defineURL;

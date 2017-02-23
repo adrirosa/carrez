@@ -1,12 +1,17 @@
 var express = require('express');
 var http = require('http');
 var bodyParser = require('body-parser');
-var good = require('./leboncoin.js');
-var deal = require('./meilleursagents.js');
+var good = require('./leboncoin');
+var deal = require('./meilleursagents');
 
 var app = express().use(express.static(__dirname+'/'));
-var url = '';
+var url = "";
 var urlencodedParser = bodyParser.urlencoded({ extended: false});
+
+var goodToCheck = "";
+var urlMA ="";
+var pricesCity = "";
+var realEstate = "";
 
 app.set('port', process.env.PORT || 3000);
 //app.set('view engine', 'ejs');
@@ -22,21 +27,33 @@ app.get('/',function(req, res){
 	res.render('index');
 });
 
+var callback1 = function(err, goodToCheck){
+	if(err) {throw err;}
+	goodToCheck = JSON.parse(goodToCheck);
+	urlMA = defineURL(goodToCheck);
+};
+
+var callback2 = function(err, goodToCheck, pricesCity){
+	if(err) {throw err;}
+	realEstate = calculDeal(goodToCheck,pricesCity);
+	console.log(realEstate);
+};
+
+var scrapLBC = function(good, url, callback){
+	goodToCheck = good.scrapper(url);
+	callback(null, goodToCheck);
+};
+
+var calcul = function(deal, urlMA, callback){
+	pricesCity = deal.scrapMA(urlMA);
+	callback(null, goodToCheck, pricesCity);
+};
+
 app.post('/post',urlencodedParser, function(req,res){
 	url = req.body.urlBonCoin;
- 	//module leboncoin+meilleursagents
- 	//res.send(the page with the result that u want to return)
- 	var goodToCheck = good.scrapper(url);
- 	console.log(goodToCheck);
- 	goodToCheck = JSON.parse(goodToCheck);
- 	
- 	var urlMA = defineURL(goodToCheck);
- 	var pricesCity = deal.scrapMA(urlMA);
-
- 	var realEstate = calculDeal(goodToCheck,pricesCity);
- 	res.send(url);
- 	//console.log(url);
- 	//res.render('index-success',{urlBonCoin: req.body});
+ 	scrapLBC(good, url, callback1);
+ 	calcul(deal,urlMA,callback2);
+ 	res.send('/post',realEstate);
  });
 
 /*
@@ -48,7 +65,8 @@ function calculDeal(goodToCheck,pricesCity){
 	var priceAvg = 0;
 	var result = '';
 	var pricePerM2 = parseInt(goodToCheck.price) / parseInt(goodToCheck.surface); //string to int
-
+	var delta = 0;
+	var deltaPourc = 0;
 
 	if(goodToCheck.type == "Appartement"){
 		priceAvg = pricesCity.AvgPriceApt;
@@ -60,14 +78,23 @@ function calculDeal(goodToCheck,pricesCity){
 		return result;
 	}
 
+
 	if(pricePerM2 >= priceAvg) {
+		delta = pricePerM2 - priceAvg;
+	} else {
+		delta = priceAvg - pricePerM2;
+	}
+
+	deltaPourc = (delta * 100)/priceAvg;
+	if(deltaPourc > 30){
 		result = "You'll better look away...";
 	} else {
-		result = "That's a good deal ! Don't let it go !"
+		result = "That's a good deal ! Don't let it go !";
 	}
+
 	console.log(result);
 	return result;
-}
+};
 
 /*
 ** Function to define the url of meilleursagents.com according to the city
@@ -80,7 +107,7 @@ function defineURL(goodToCheck){
 	urlDefined += cityName;
 
 	return urlDefined;
-}
+};
 
 
 // recup url
